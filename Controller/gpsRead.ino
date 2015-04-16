@@ -1,14 +1,14 @@
 void gpsRead(){
-   if (gps.available() > 1)
-  {
-    if (char(gps.read()) == 'R' && char(gps.read()) == 'M' && char(gps.read()) == 'C')
+if(Serial.available() > 1)
+{
+  if (char(Serial.read()) == 'R' && char(Serial.read()) == 'M' && char(Serial.read()) == 'C')
     {
-      gpsTime(gps.parseInt());
-      gps.parseFloat(); //discard unnecessary part
-      gpsLatLong(gps.parseInt(), gps.parseInt(), gps.parseInt(), gps.parseInt());
-      gpsSpeed = gps.parseFloat()*1.852; //km/h
-      gpsBearing = gps.parseFloat();
-      gpsDate(gps.parseInt());
+      gpsTime(Serial.parseInt());
+      Serial.parseFloat(); //discard unnecessary part
+      gpsLatLong(Serial.parseInt(), Serial.parseInt(), Serial.parseInt(), Serial.parseInt());
+      gpsSpeed = Serial.parseFloat()*1.852; //km/h
+      gpsBearing = Serial.parseFloat();
+      gpsDate(Serial.parseInt());
       if (gpsYear%4 == 0) DaysAMonth[1] = 29; //leap year check
  
       //Time zone adjustment
@@ -45,20 +45,15 @@ void gpsRead(){
           if (gpsMonth > 12) gpsYear += 1;
         }
       }
-       
-      Serial.print(gpsDay);
-      Serial.print("/");
-      Serial.print(gpsMonth);
-      Serial.print("/");
-      Serial.print(gpsYear);
-      Serial.print(" ");
-      Serial.print(gpsHour);
-      Serial.print(":");
-      Serial.println(gpsMin);
-      Serial.println(gpsBearing);
-    }
-  }
+  lcd.setCursor(0,0); 
+  lcd.print(gpsLat);
+  lcd.print(":");
+  lcd.print(gpsLong);
 }
+
+}
+}
+
 void gpsTime(long UTC)
 {
   gpsHour = int(UTC/10000);
@@ -69,11 +64,9 @@ void gpsTime(long UTC)
 void gpsLatLong(int lat1, int lat2, int long1, int long2)
 {
   gpsLat = int(lat1/100) + (lat1%100)/60.0 + float(lat2)/10000.0/60.0;
-   Serial.print("Lat: ");
-   Serial.print(gpsLat,4);
-   Serial.print(" Long: ");
+
   gpsLong = int(long1/100) + (long1%100)/60.0 + float(long2)/10000.0/60.0;
-   Serial.println(gpsLong,4);
+
 }
  
 void gpsDate(long dateRead)

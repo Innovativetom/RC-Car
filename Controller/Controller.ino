@@ -1,11 +1,12 @@
 // include the libraries //
 #include <LiquidCrystal.h> //lcd 16x2 library
 #include <Servo.h> //servo library for controlling the motors and stearing servo
-#include <SoftwareSerial.h> // for talking to gps
+#include <Timer.h>
+
+
 
 // initialize the libraries, pins and variables
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2); 
-SoftwareSerial gps(13, 8); // RX, TX gps pins
 
 Servo drive; 
 Servo stearing;
@@ -37,32 +38,28 @@ float gpsBearing; //deg
 int leftStickXAxisVal = 0;
 int leftStickYAxisVal = 0;
 
+Timer t;
 
 void setup() {
-  
   Serial.begin(38400);  
-  gps.begin(38400);
   // set up the LCD's number of columns and rows: 
   lcd.begin(16,2);
   drive.attach(6);
-  stearing.attach(9);  
-  
+  stearing.attach(9);
 }
 
 void loop() {
-  // set the cursor to (0,0):
+  //set the cursor to (0,0):
   //left sitck x axis
-  //  lcd.setCursor(0, 0);  
+
   //  leftStickXAxisVal = stickinput(leftStickXAxisPin);
   //  lcd.print("LX :");
   //  lcd.print(leftStickXAxisVal);
+  t.every(1000, gpsRead);
+  
 
-  gpsRead();
-  delay(10);
-  lcd.setCursor(9,0);
-  lcd.print(gpsLat);
-  //left stick y axis
-  lcd.setCursor(0,0);  
+
+  lcd.setCursor(0,1);
   leftStickYAxisVal = stickinput(leftStickYAxisPin);
   lcd.print("LY :");
   lcd.print(leftStickYAxisVal);
@@ -70,15 +67,16 @@ void loop() {
 
   if ((leftStickYAxisVal<1550) && (leftStickYAxisVal>1450)){
     drive.writeMicroseconds(1500);
-    lcd.setCursor(0,1);
     lcd.print(1500);
   }
   else {
     drive.writeMicroseconds(leftStickYAxisVal);
   }
+delay(100);
+lcd.clear();
 
-  delay(10);
-  lcd.clear();
 }
+
+
 
 
